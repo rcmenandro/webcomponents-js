@@ -35,68 +35,69 @@ class QrCodeVideoScanner extends HTMLElement {
         shadowRoot.appendChild(template.content.cloneNode(true));
 
         window.addEventListener('load', function () {
-            let selectedDeviceId;
+            // let selectedDeviceId;
             const qrCodeReader = new ZXing.BrowserMultiFormatReader();
             console.log('ZXing code reader initialized');
-            
-            qrCodeReader.listVideoInputDevices()
-                .then((videoInputDevices) => {
-                    const sourceSelect = shadowRoot.getElementById('sourceSelect');
-                    selectedDeviceId = videoInputDevices[0].deviceId;
 
-                    if (videoInputDevices.length >= 1) {
-                        videoInputDevices.forEach((element) => {
-                            const sourceOption = document.createElement('option');
-                            sourceOption.text = element.label;
-                            sourceOption.value = element.deviceId;
-                            sourceSelect.appendChild(sourceOption);
-                        })
+            shadowRoot.getElementById('startButton').addEventListener('click', () => {
+                let videoElement = shadowRoot.querySelector('video');
 
-                        sourceSelect.onchange = () => {
-                            selectedDeviceId = sourceSelect.value;
-                        };
-
-                        const sourceSelectPanel = shadowRoot.getElementById('sourceSelectPanel')
-                        sourceSelectPanel.style.display = 'block'
+                qrCodeReader.decodeFromVideoDevice(undefined, videoElement, (result, err) => {
+                    if (result) {
+                        console.log(result);
+                        shadowRoot.getElementById('result').textContent = result.text;
                     }
+                    if (err && !(err instanceof ZXing.NotFoundException)) {
+                        console.error(err)
+                        shadowRoot.getElementById('result').textContent = err
+                    }
+                })
+                // console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
+            })
+            
+            shadowRoot.getElementById('scanOnceButton').addEventListener('click', () => {
+                let videoElement = shadowRoot.querySelector('video');
 
-                    shadowRoot.getElementById('startButton').addEventListener('click', () => {
-                        let videoElement = shadowRoot.querySelector('video');
-
-                        qrCodeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, (result, err) => {
-                            if (result) {
-                                console.log(result);
-                                shadowRoot.getElementById('result').textContent = result.text;
-                            }
-                            if (err && !(err instanceof ZXing.NotFoundException)) {
-                                console.error(err)
-                                shadowRoot.getElementById('result').textContent = err
-                            }
-                        })
-                        console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
+                qrCodeReader.decodeOnceFromVideoDevice(undefined, videoElement)
+                    .then(result => {
+                        console.log(result);
+                        shadowRoot.getElementById('result').textContent = result.text;
+                        qrCodeReader.reset();
                     })
-                    
-                    shadowRoot.getElementById('scanOnceButton').addEventListener('click', () => {
-                        let videoElement = shadowRoot.querySelector('video');
+                    .catch(err => console.error(err));
+            });
 
-                        qrCodeReader.decodeOnceFromVideoDevice(selectedDeviceId, videoElement)
-                            .then(result => {
-                                console.log(result);
-                                shadowRoot.getElementById('result').textContent = result.text;
-                                qrCodeReader.reset();
-                            })
-                            .catch(err => console.error(err));
-                    });
+            shadowRoot.getElementById('resetButton').addEventListener('click', () => {
+                qrCodeReader.reset()
+                shadowRoot.getElementById('result').textContent = '';
+                console.log('Reset.')
+            });
 
-                    shadowRoot.getElementById('resetButton').addEventListener('click', () => {
-                        qrCodeReader.reset()
-                        shadowRoot.getElementById('result').textContent = '';
-                        console.log('Reset.')
-                    });
-                })
-                .catch((err) => {
-                    console.error(err)
-                })
+
+            // qrCodeReader.listVideoInputDevices()
+            //     .then((videoInputDevices) => {
+            //         const sourceSelect = shadowRoot.getElementById('sourceSelect');
+            //         selectedDeviceId = videoInputDevices[0].deviceId;
+
+            //         if (videoInputDevices.length >= 1) {
+            //             videoInputDevices.forEach((element) => {
+            //                 const sourceOption = document.createElement('option');
+            //                 sourceOption.text = element.label;
+            //                 sourceOption.value = element.deviceId;
+            //                 sourceSelect.appendChild(sourceOption);
+            //             })
+
+            //             sourceSelect.onchange = () => {
+            //                 selectedDeviceId = sourceSelect.value;
+            //             };
+
+            //             const sourceSelectPanel = shadowRoot.getElementById('sourceSelectPanel')
+            //             sourceSelectPanel.style.display = 'block'
+            //         }
+            //     })
+            //     .catch((err) => {
+            //         console.error(err)
+            //     })
           })
 
     }
