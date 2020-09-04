@@ -63,6 +63,7 @@ class QrCodeVideoScanner extends HTMLElement {
                     shadowRoot.getElementById('startButton').addEventListener('click', () => {
                         let videoElement = shadowRoot.querySelector('video');
 
+                        // Se quiser utilizar a camera default do dispositivo, entao no lugar do selectedDeviceId, informar undefined
                         qrCodeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, (result, err) => {
                             if (result) {
                                 console.log(result);
@@ -79,6 +80,7 @@ class QrCodeVideoScanner extends HTMLElement {
                     shadowRoot.getElementById('scanOnceButton').addEventListener('click', () => {
                         let videoElement = shadowRoot.querySelector('video');
 
+                        // Se quiser utilizar a camera default do dispositivo, entao no lugar do selectedDeviceId, informar undefined
                         qrCodeReader.decodeOnceFromVideoDevice(selectedDeviceId, videoElement)
                             .then(result => {
                                 console.log(result);
@@ -109,13 +111,16 @@ class QrCodeVideoScanner extends HTMLElement {
 
 // Setup
 function dynamicallyLoadDependencies(url, type) {
-    var script = document.createElement("script");  // create a script DOM node
-    script.src = url;  // set its src to the provided URL
-    script.type = type; // type of script
-
-    document.head.appendChild(script);  // add it to the end of the head section of the page (could change 'head' to 'body' to add it to the end of the body section instead)
+    // Verifica se o script ja foi adicionado, senao adiciona
+    if (!document.querySelector(`script[src="${url}"]`)) {
+        var script = document.createElement("script"); 
+        script.src = url;
+        script.type = type;
+        
+        document.head.appendChild(script);
+    }
 }
-dynamicallyLoadDependencies("./libs/@zxing/umd/index.min.js", "text/javascript");
+dynamicallyLoadDependencies("../common/libs/@zxing/umd/index.min.js", "text/javascript");
 // dynamicallyLoadDependencies("https://unpkg.com/@zxing/library@latest", "text/javascript"); podemos adicionar a dependencia direta da fonte
 
 // Define the webcomponent tag name
