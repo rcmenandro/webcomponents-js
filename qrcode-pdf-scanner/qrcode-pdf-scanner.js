@@ -39,7 +39,6 @@ class QrCodePdfScanner extends HTMLElement {
 
                 // Transformar pdf to image
                 var pdfjsLib = window['pdfjs-dist/build/pdf'];
-                
                 pdfjsLib.GlobalWorkerOptions.workerSrc = '../common/libs/pdfjs/build/pdf.worker.js';
             
                 var loadingTask = pdfjsLib.getDocument(pdfFile);
@@ -49,14 +48,12 @@ class QrCodePdfScanner extends HTMLElement {
 
                     // TODO: Implementar o loop nas paginas, assim percorremos todas as paginas buscando pelos qrCodes
                     pdf.getPage(1).then(function(page) {
-                        console.log(page);
-                        
                         var viewport = page.getViewport({
                             scale: 1 
                         });
+
                         var canvas = shadowRoot.getElementById('canvasPdf');
                         var canvasCtx = canvas.getContext('2d');
-                        console.log(viewport);
                         canvas.height = viewport.height;
                         canvas.width = viewport.width;
 
