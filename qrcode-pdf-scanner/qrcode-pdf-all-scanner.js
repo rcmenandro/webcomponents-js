@@ -73,7 +73,7 @@ class QrCodePdfAllScanner extends HTMLElement {
             var pdfFile = URL.createObjectURL(uploadFile.files[0]);
 
             const pdfjsLib = window['pdfjs-dist/build/pdf'];
-            pdfjsLib.GlobalWorkerOptions.workerSrc = '../common/libs/pdfjs/build/pdf.worker.js';
+            pdfjsLib.GlobalWorkerOptions.workerSrc = '../common/libs/pdfjs/es5/build/pdf.worker.js';
             console.log('PdfJs initialized');
 
             const qrCodeReader = new ZXing.BrowserMultiFormatReader();
@@ -119,7 +119,7 @@ function dynamicallyLoadDependencies(url, type) {
 }
 // dynamicallyLoadDependencies("https://unpkg.com/@zxing/library@latest", "text/javascript"); podemos adicionar a dependencia direta da fonte
 dynamicallyLoadDependencies("../common/libs/@zxing/umd/index.min.js", "text/javascript");
-dynamicallyLoadDependencies("../common/libs/pdfjs/build/pdf.js", "text/javascript");
+dynamicallyLoadDependencies("../common/libs/pdfjs/es5/build/pdf.js", "text/javascript");
 
 // Define the webcomponent tag name
 window.customElements.define('qrcode-pdf-all-scanner', QrCodePdfAllScanner);
